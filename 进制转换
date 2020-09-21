@@ -1,0 +1,17 @@
+# 后11位置零函数
+def BIDtoNodeID_11(BID):
+    NodeId = 0
+    binary_ID = bin(BID)[:-11]
+    b = binary_ID + '00000000000'
+    for index, i in enumerate(b[2:]):
+        NodeId = NodeId + int(i) * (2 ** (len(b[2:]) - 1 - index))
+    return NodeId
+
+# 后19位置零函数
+def BIDtoNodeID_19(BID):
+    NodeId = 0
+    binary_ID = bin(BID)[:-19]
+    b = binary_ID + '0000000000000000000'
+    for index, i in enumerate(b[2:]):
+        NodeId = NodeId + int(i) * (2 ** (len(b[2:]) - 1 - index))
+    return NodeId
