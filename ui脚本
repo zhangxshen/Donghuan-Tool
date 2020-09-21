@@ -1,0 +1,188 @@
+# -*- coding: utf-8 -*-
+
+# Form implementation generated from reading ui file 'DHKW.ui'
+#
+# Created by: PyQt5 UI code generator 5.6
+#
+# WARNING! All changes made in this file will be lost!
+
+# from PyQt5 import QtCore, QtGui, QtWidgets
+# from PyQt5.QtCore import Qt
+# from PyQt5.QtWidgets import QFileDialog, QApplication, QMainWindow
+# from PyQt5.Qt import QPalette
+# import qtawesome as qta
+#
+# class Ui_MainWindow(object):
+#     def setupUi(self, MainWindow):
+#         MainWindow.setObjectName("MainWindow")
+#         MainWindow.resize(965, 643)
+#         self.centralwidget = QtWidgets.QWidget(MainWindow)
+#         self.centralwidget.setObjectName("centralwidget")
+#         self.pushButton = QtWidgets.QPushButton(self.centralwidget)
+#         self.pushButton.setGeometry(QtCore.QRect(30, 490, 231, 91))
+#         self.pushButton.setObjectName("pushButton")
+#         self.pushButton_2 = QtWidgets.QPushButton(self.centralwidget)
+#         self.pushButton_2.setGeometry(QtCore.QRect(280, 490, 241, 91))
+#         self.pushButton_2.setObjectName("pushButton_2")
+#         self.textBrowser = QtWidgets.QTextBrowser(self.centralwidget)
+#         self.textBrowser.setGeometry(QtCore.QRect(30, 50, 901, 401))
+#         self.textBrowser.setMaximumSize(QtCore.QSize(939, 16777215))
+#         self.textBrowser.setObjectName("textBrowser")
+#         self.pushButton_3 = QtWidgets.QPushButton(self.centralwidget)
+#         self.pushButton_3.setGeometry(QtCore.QRect(730, 490, 201, 91))
+#         self.pushButton_3.setObjectName("pushButton_3")
+#         MainWindow.setCentralWidget(self.centralwidget)
+#         self.statusbar = QtWidgets.QStatusBar(MainWindow)
+#         self.statusbar.setObjectName("statusbar")
+#         MainWindow.setStatusBar(self.statusbar)
+#
+#         self.retranslateUi(MainWindow)
+#         QtCore.QMetaObject.connectSlotsByName(MainWindow)
+#
+#     def retranslateUi(self, MainWindow):
+#         _translate = QtCore.QCoreApplication.translate
+#
+#         icon = qta.icon('mdi.table-eye', color='Black')
+#         MainWindow.setWindowTitle(_translate("MainWindow", "动环告警勘误工具"))
+#         MainWindow.setWindowIcon(icon)  # 设置图标
+#         #MainWindow.setWindowOpacity(0.9)    #设置窗口透明度
+#         MainWindow.setWindowFlag(QtCore.Qt.FramelessWindowHint)  # 隐藏边框
+#         pe = QPalette()
+#         MainWindow.setAutoFillBackground(True)
+#         pe.setColor(QPalette.Window, Qt.lightGray)  # 设置背景色
+#         pe.setColor(QPalette.Background,Qt.lightGray)
+#         MainWindow.setPalette(pe)
+#         self.pushButton.setText(_translate("MainWindow", "告警数据导入"))
+#         self.pushButton_2.setText(_translate("MainWindow", "标准字典导入"))
+#         self.pushButton_3.setText(_translate("MainWindow", "开始勘误"))
+#         self.pushButton.setStyleSheet('''
+#             QPushButton{background:#696969;border-radius:15px;}
+#             QPushButton{font-family:'微软雅黑';font-size:20px;color:rgb(255,255,255);}
+#             QPushButton:hover{background:#708090;}
+#             ''')
+#         self.pushButton_2.setStyleSheet('''
+#             QPushButton{background:#696969;border-radius:15px;}
+#             QPushButton{font-family:'微软雅黑';font-size:20px;color:rgb(255,255,255);}
+#             QPushButton:hover{background:#708090;}
+#             ''')
+#         self.pushButton_3.setStyleSheet('''
+#             QPushButton{background:#696969;border-radius:15px;}
+#             QPushButton:hover{background:#708090;}
+#             QPushButton{font-family:'微软雅黑';font-size:20px;color:rgb(255,255,255);}
+#             ''')
+#
+#         icon1 = qta.icon('mdi.application-import', color='White')
+#         icon2 = qta.icon('fa.book', color='White')
+#         icon3 = qta.icon('mdi.table-eye', color='White')
+#         self.pushButton.setIcon(icon1)  # 设置图标
+#         self.pushButton.setIconSize(QtCore.QSize(50, 50))
+#         self.pushButton_2.setIcon(icon2)  # 设置图标
+#         self.pushButton_2.setIconSize(QtCore.QSize(50, 50))
+#         self.pushButton_3.setIcon(icon3)  # 设置图标
+#         self.pushButton_3.setIconSize(QtCore.QSize(50, 50))
+
+
+from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QFileDialog, QApplication, QMainWindow
+from PyQt5.Qt import QPalette
+import qtawesome as qta
+
+
+class Ui_MainWindow(object):
+    def setupUi(self, MainWindow):
+        MainWindow.setObjectName("MainWindow")
+        MainWindow.resize(998, 661)
+        self.centralwidget = QtWidgets.QWidget(MainWindow)
+        self.centralwidget.setObjectName("centralwidget")
+        self.pushButton = QtWidgets.QPushButton(self.centralwidget)
+        self.pushButton.setGeometry(QtCore.QRect(30, 490, 231, 91))
+        self.pushButton.setObjectName("pushButton")
+        self.pushButton_2 = QtWidgets.QPushButton(self.centralwidget)
+        self.pushButton_2.setGeometry(QtCore.QRect(280, 490, 241, 91))
+        self.pushButton_2.setObjectName("pushButton_2")
+        self.textBrowser = QtWidgets.QTextBrowser(self.centralwidget)
+        self.textBrowser.setGeometry(QtCore.QRect(30, 50, 901, 401))
+        self.textBrowser.setMaximumSize(QtCore.QSize(939, 16777215))
+        self.textBrowser.setObjectName("textBrowser")
+        self.pushButton_3 = QtWidgets.QPushButton(self.centralwidget)
+        self.pushButton_3.setGeometry(QtCore.QRect(730, 490, 201, 91))
+        self.pushButton_3.setObjectName("pushButton_3")
+
+        self.pushButton_mini = QtWidgets.QPushButton(self.centralwidget)
+        self.pushButton_mini.setGeometry(QtCore.QRect(840, 10, 41, 31))
+        self.pushButton_mini.setObjectName("pushButton_5")
+        self.pushButton_close = QtWidgets.QPushButton(self.centralwidget)
+        self.pushButton_close.setGeometry(QtCore.QRect(890, 10, 41, 31))
+        self.pushButton_close.setObjectName("pushButton_6")
+        MainWindow.setCentralWidget(self.centralwidget)
+        self.statusbar = QtWidgets.QStatusBar(MainWindow)
+        self.statusbar.setObjectName("statusbar")
+        MainWindow.setStatusBar(self.statusbar)
+
+        self.retranslateUi(MainWindow)
+        QtCore.QMetaObject.connectSlotsByName(MainWindow)
+
+    def retranslateUi(self, MainWindow):
+        _translate = QtCore.QCoreApplication.translate
+        icon = qta.icon('mdi.table-eye', color='White') #应用程序图标
+        MainWindow.setWindowTitle(_translate("MainWindow", "动环告警勘误工具"))
+        MainWindow.setWindowIcon(icon)  # 设置图标
+        # MainWindow.setWindowOpacity(0.9)    #设置窗口透明度
+        MainWindow.setWindowFlag(QtCore.Qt.FramelessWindowHint)  # 隐藏边框
+        pe = QPalette()
+        MainWindow.setAutoFillBackground(True)
+        pe.setColor(QPalette.Window, Qt.lightGray)  # 设置背景色
+        pe.setColor(QPalette.Background, Qt.lightGray)
+        MainWindow.setPalette(pe)
+        MainWindow.setWindowTitle(_translate("MainWindow", "动环告警勘误工具"))
+        self.pushButton.setText(_translate("MainWindow", "告警数据导入"))
+        self.pushButton_2.setText(_translate("MainWindow", "标准字典导入"))
+        self.pushButton_3.setText(_translate("MainWindow", "开始勘误"))
+
+        # self.pushbutton_mini.setText(_translate("MainWindow", "PushButton"))
+        self.pushButton_mini.setStyleSheet('''QPushButton{background:#696969;border-radius:15px;}
+        QPushButton:hover{background:#C0C0C0;}''')
+
+        # self.pushbutton_close.setText(_translate("MainWindow", "PushButton"))
+        self.pushButton_close.setStyleSheet('''
+            QPushButton{background:#696969;border-radius:15px;}
+            QPushButton:hover{background:#C0C0C0;}
+            ''')
+
+        self.pushButton.setStyleSheet('''
+                    QPushButton{background:#696969;border-radius:15px;}
+                    QPushButton{font-family:'微软雅黑';font-size:20px;color:rgb(255,255,255);}
+                    QPushButton:hover{background:#708090;}
+                    ''')
+        self.pushButton_2.setStyleSheet('''
+                    QPushButton{background:#696969;border-radius:15px;}
+                    QPushButton{font-family:'微软雅黑';font-size:20px;color:rgb(255,255,255);}
+                    QPushButton:hover{background:#708090;}
+                    ''')
+        self.pushButton_3.setStyleSheet('''
+                    QPushButton{background:#696969;border-radius:15px;}
+                    QPushButton:hover{background:#708090;}
+                    QPushButton{font-family:'微软雅黑';font-size:20px;color:rgb(255,255,255);}
+                    ''')
+
+        icon1 = qta.icon('mdi.application-import', color='White')
+        icon2 = qta.icon('fa.book', color='White')
+        icon3 = qta.icon('mdi.table-eye', color='White')
+        iconmini = qta.icon('fa.window-minimize', color='White')
+        iconclose = qta.icon('fa.close', color='White')
+
+        self.pushButton.setIcon(icon1)  # 设置图标
+        self.pushButton.setIconSize(QtCore.QSize(50, 50))
+        self.pushButton_2.setIcon(icon2)  # 设置图标
+        self.pushButton_2.setIconSize(QtCore.QSize(50, 50))
+        self.pushButton_3.setIcon(icon3)  # 设置图标
+        self.pushButton_3.setIconSize(QtCore.QSize(50, 50))
+        self.pushButton_mini.setIcon(iconmini)  # 设置图标
+        self.pushButton_mini.setIconSize(QtCore.QSize(20, 20))
+        self.pushButton_close.setIcon(iconclose)  # 设置图标
+        self.pushButton_close.setIconSize(QtCore.QSize(20, 20))
+
+
+
+
