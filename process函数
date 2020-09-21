@@ -1,0 +1,76 @@
+import re
+import os
+import pandas as pd
+import models.sigstand_corr
+import models.title_corr
+import models.comple_corr
+
+sigstand_db_name = "中国移动动环信号标准化字典表"
+alastand_db_name = "中国移动动环告警标准化字典表"
+
+#特殊匹配表
+s_match = [
+    '交流输入XX相电压Ua过高告警',
+    '交流输入XX相电压Ua过低告警',
+    '交流输入XX相电压Ub过高告警',
+    '交流输入XX相电压Ub过低告警',
+    '交流输入XX相电压Uc过高告警',
+    '交流输入XX相电压Uc过低告警',
+    '输出分路XX相电压Ua过高告警',
+    '输出分路XX相电压Ub过高告警',
+    '输出分路XX相电压Uc过高告警',
+    '输出分路XX相电压Ua过低告警',
+    '输出分路XX相电压Ub过低告警',
+    '输出分路XX相电压Uc过低告警'
+        ]
+
+
+def process(path_target,path_dict):
+    print('勘误开始，请耐心等待......')
+    df_trgt_alarm = pd.read_excel(path_target, sheet_name='AlarmTitle')
+    # 去除重复BID值
+    df_trgt_alarm = df_trgt_alarm.drop_duplicates(['BID'])
+    df_trgt_device = pd.read_excel(path_target, sheet_name='M_Device')
+    df_trgt_station = pd.read_excel(path_target, sheet_name='M_Station')
+    df_dict = pd.read_excel(path_dict, sheet_name=alastand_db_name)
+    # 正则匹配规则
+    regex1 = re.compile(r'\d')
+    regex2 = re.compile(r'(a|b|c)')
+    regex3 = re.compile(r'[（].*[）]')
+
+    df_device_staion_include = models.title_corr.device_station_search(df_trgt_alarm,df_trgt_device,df_trgt_station)
+    # 新建DataFrame存放特殊匹配标题
+    df_s_match = pd.DataFrame()
+    df_device_staion_include['TitleFilted'] = df_device_staion_include['AlarmTitleDes'].apply(
+        lambda x: re.sub(regex1, 'X', x))
+    # 过滤数字之后对特殊匹配表进行匹配
+    for i in s_match:
+        df_s_match = df_s_match.append(df_device_staion_include[df_device_staion_include['TitleFilted'].values == i],
+                                       ignore_index=True)
+        # df.drop(df.loc[df['TitleFilted' == i].index])
+        # 原数据去除特殊匹配行，特殊匹配行后续进行专门处理
+        df_device_staion_include = df_device_staion_include[-(df_device_staion_include.TitleFilted.isin([i]))]
+    df_device_staion_include['TitleFilted'] = df_device_staion_include['TitleFilted'].apply(
+        lambda x: re.sub(regex2, 'x', x))
+    df_device_staion_include['TitleFilted'] = df_device_staion_include['TitleFilted'].apply(
+        lambda x: re.sub(regex3, '', x))
+
+    df_error_device_2, df_error_titles_2 = models.title_corr.search_correct(df_s_match, df_dict, df_trgt_alarm)
+    df_error_device_1, df_error_titles_1 = models.title_corr.search_correct(df_device_staion_include, df_dict, df_trgt_alarm)
+    df_error_titles_1 = df_error_titles_1.append(df_error_titles_2)
+    df_error_device_1 = df_error_device_1.append(df_error_device_2)
+    # df_result_1 = df_result_1.append(df_result_2)
+
+    sheets = ('df_error_device', 'df_error_titles', 'df_result')
+    # result_excle = pd.DataFrame()
+    # result_excle.to_excel(cwd + '\\output.xlsx')
+    with pd.ExcelWriter(os.getcwd() + '\\告警标题规范性勘误.xlsx') as writer:
+        df_error_device_1.to_excel(writer, sheet_name='设备类型编码错误', index=None)
+        df_error_titles_1.to_excel(writer, sheet_name='告警标题错误', index=None)
+
+def sigstand_corr(path_target, path_dict):
+    models.sigstand_corr.sigstand_corr(path_target, path_dict)
+
+def comple_corr(path_target, path_dict):
+    models.comple_corr.comple_corr(path_dict, path_target)
+
