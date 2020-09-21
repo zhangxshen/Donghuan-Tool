@@ -1,0 +1,154 @@
+import pandas as pd
+from . import bidtransform
+from string import digits
+import re
+
+sigstand_db_name = "中国移动动环信号标准化字典表"
+alastand_db_name = "中国移动动环告警标准化字典表"
+ala_dic_name = '告警标准名'
+ala_dic_key = '是否关键信号'
+sig_dic_name = '信号标准名'
+sig_dic_key = '是否关键信号'
+alarmtitle_name = 'AlarmTitleDes'
+aic_node = 'NodeId'
+aic_name = 'NodeName'
+dals_node = 'NodeId'
+dev_node = 'NodeId'
+dev_name = 'NodeName'
+sta_node = 'NodeId'
+sta_name = 'NodeName'
+empty_name = ''
+
+# 信号量、告警标题完整性勘误
+
+
+def change_xx(nodename):
+    a = nodename.replace("XX", "")
+    return a
+
+
+def change_dig(nodename):
+    remove_digits = str.maketrans('', '', digits)
+    res = nodename.translate(remove_digits)
+    a_res = re.sub('\\(.*?\\)', '', res)
+    return a_res
+
+
+def comple_corr(path_dict, path_target):
+    print("下面开始进行信号量和告警标题完整性勘误……\n")
+    aic_df = pd.read_excel(path_target, sheet_name='M_AIC')
+    ala_df = pd.read_excel(path_target, sheet_name='AlarmTitle')
+    sta_df = pd.read_excel(path_target, sheet_name='M_Station')
+    dev_df = pd.read_excel(path_target, sheet_name='M_Device')
+    sig_df = pd.read_excel(path_dict, sheet_name=sigstand_db_name)
+    alastan_df = pd.read_excel(path_dict, sheet_name=alastand_db_name)
+
+    dev_df.rename(
+        columns={
+            'NodeName': 'Device',
+            'NodeId': 'Dev_ID'},
+        inplace=True)
+
+    devicetype = dev_df['DeviceType'].tolist()
+    sig_df = sig_df[sig_df['第二、三位（设备类型编码）'].isin(devicetype)]
+    alastan_df = alastan_df[alastan_df['第二、三位（设备类型编码）'].isin(devicetype)]
+
+    sta_df.rename(
+        columns={
+            'NodeName': 'Station',
+            'NodeId': 'Sta_ID'},
+        inplace=True)
+
+    # 筛选出完整性告警名和信号名，增加一列修改过的用于和原始数据比对
+    sig_df2 = sig_df[sig_df['完整性勘误'].isin(['完整性'])]
+    sig_df2['信号标准名_改'] = sig_df2['信号标准名'].apply(change_xx)
+    alastan_df2 = alastan_df[alastan_df['完整性勘误'].isin(['完整性'])]
+    alastan_df2['告警标准名_改'] = alastan_df2['告警标准名'].apply(change_xx)
+
+    aic_df['NodeName_改'] = aic_df['NodeName'].apply(change_dig)
+    aic_df['NodeId_11'] = aic_df[aic_node].apply(bidtransform.BIDtoNodeID_11)
+    aic_df['NodeId_19'] = aic_df[aic_node].apply(bidtransform.BIDtoNodeID_19)
+
+    aic_df2 = pd.merge(aic_df, dev_df.loc[:, [
+        'Dev_ID', 'Device']],
+        how='left',
+        left_on='NodeId_11',
+        right_on='Dev_ID')
+    aic_df2 = pd.merge(aic_df2, sta_df.loc[:, [
+        'Sta_ID', 'Station']],
+        how='left',
+        left_on='NodeId_19',
+        right_on='Sta_ID')
+
+    tmp_df = aic_df2.drop_duplicates(
+        subset=[
+            'Station',
+            'Device',
+            'NodeName'],
+        keep='first')
+    aic_df2 = aic_df2.append(tmp_df)
+    tmp_df = tmp_df.loc[:, ['NodeName_改',
+                            'Station', 'Device', 'NodeId', 'NodeName']]
+    aic_df2 = aic_df2.drop_duplicates(keep=False)
+    aic_df2['是否合格'] = '不合格'
+    aic_df2 = aic_df2.loc[:, ['NodeName_改', 'Station',
+                              'Device', 'NodeId', 'NodeName', '是否合格']]
+    aic_df2 = aic_df2.append(tmp_df)
+
+    ala_df['NodeId_11'] = ala_df['BID'].apply(bidtransform.BIDtoNodeID_11)
+    ala_df['NodeId_19'] = ala_df['BID'].apply(bidtransform.BIDtoNodeID_19)
+    ala_df['AlarmTitleDes_改'] = ala_df['AlarmTitleDes'].apply(change_dig)
+
+    ala_df2 = pd.merge(ala_df, dev_df.loc[:, [
+        'Dev_ID', 'Device']],
+        how='left',
+        left_on='NodeId_11',
+        right_on='Dev_ID')
+    ala_df2 = pd.merge(ala_df2, sta_df.loc[:, [
+        'Sta_ID', 'Station']],
+        how='left',
+        left_on='NodeId_19',
+        right_on='Sta_ID')
+
+    tmp_df2 = ala_df2.drop_duplicates(
+        subset=[
+            'Station',
+            'Device',
+            'AlarmTitleDes'],
+        keep='first')
+    ala_df2 = ala_df2.append(tmp_df2)
+    tmp_df2 = tmp_df2.loc[:, ['AlarmTitleDes_改',
+                            'Station', 'Device', 'BID', 'AlarmTitleDes']]
+    ala_df2 = ala_df2.drop_duplicates(keep=False)
+    ala_df2['是否合格'] = '不合格'
+    ala_df2 = ala_df2.loc[:, ['AlarmTitleDes_改', 'Station',
+                              'Device', 'BID', 'AlarmTitleDes', '是否合格']]
+    ala_df2 = ala_df2.append(tmp_df2)
+
+    aic_df2 = pd.merge(aic_df2.loc[:, [
+        'NodeName_改', 'Station', 'Device', 'NodeId', 'NodeName', '是否合格']], sig_df2.loc[:, [
+            '信号标准名', '是否关键信号', '信号标准名_改']],
+        how='right',
+        left_on='NodeName_改',
+        right_on='信号标准名_改')
+    aic_df2 = aic_df2.loc[:, [
+        'Station', 'Device', 'NodeId', 'NodeName', '是否合格', '信号标准名', '是否关键信号']]
+    aic_df2.to_excel('信号量完整性勘误.xlsx', index=None)
+
+    ala_df2 = pd.merge(ala_df2.loc[:,
+                                   ['AlarmTitleDes_改',
+                                    'Station',
+                                    'Device',
+                                    'BID',
+                                    'AlarmTitleDes',
+                                    '是否合格']],
+                       alastan_df2.loc[:,
+                                       ['告警标准名',
+                                        '是否关键信号',
+                                        '告警标准名_改']],
+                       how='right',
+                       left_on='AlarmTitleDes_改',
+                       right_on='告警标准名_改')
+    ala_df2 = ala_df2.loc[:, [
+        'Station', 'Device', 'BID', 'AlarmTitleDes', '是否合格', '告警标准名', '是否关键信号']]
+    ala_df2.to_excel('告警标题完整性勘误.xlsx', index=None)
