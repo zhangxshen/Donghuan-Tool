@@ -1,0 +1,39 @@
+# coding=utf-8
+"""
+modified on 2020/08/24
+@author:gmcc_cbl & zs
+version：1.1
+"""
+
+import openpyxl
+import os
+from PyQt5.QtWidgets import QApplication
+import warnings
+import sys
+import ui_control
+
+
+warnings.filterwarnings("ignore")
+
+"""---------------------------------
+主函数~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+---------------------------------"""
+
+def main():
+    app = QApplication(sys.argv)
+    MainWindow = ui_control.tool_ctrl()
+    MainWindow.pushButton.clicked.connect(MainWindow.file_import)
+    MainWindow.pushButton_2.clicked.connect(MainWindow.dict_import)
+    MainWindow.pushButton_3.clicked.connect(MainWindow.threads_run)
+    MainWindow.pushButton_close.clicked.connect(MainWindow.close)
+    MainWindow.pushButton_mini.clicked.connect(MainWindow.showMinimized)
+    MainWindow.show()
+
+    print('输出文件保存在%s' % os.getcwd())
+    sys.exit(app.exec_())
+
+
+if __name__ == '__main__':
+    main()
+
+
