@@ -1,0 +1,97 @@
+import pandas as pd
+from . import bidtransform
+
+# 告警标题规范性勘误
+def device_station_search(df_trgt_alarm, df_trgt_device, df_trgt_station):
+    df_trgt_alarm['NodeId'] = df_trgt_alarm['BID'].apply(bidtransform.BIDtoNodeID_11)
+    df_trgt_alarm['station_nodeid'] = df_trgt_alarm['BID'].apply(bidtransform.BIDtoNodeID_19)
+    df_device_staion_search = pd.merge(df_trgt_alarm, df_trgt_device.loc[:, [
+        'NodeId', 'DeviceType', 'NodeName']], how='left',
+        on='NodeId')
+    df_device_staion_search = pd.merge(df_device_staion_search, df_trgt_station.loc[:, [
+        'NodeId', 'NodeName']], how='left',
+        left_on='station_nodeid',
+        right_on= 'NodeId')
+    return df_device_staion_search
+
+# def device_type_search(df_trgt_alarm, df_trgt_device):
+#     df_trgt_alarm['NodeId'] = df_trgt_alarm['BID'].apply(BIDtoNodeID_11)
+#     df_device_search = pd.merge(df_trgt_alarm, df_trgt_device.loc[:, [
+#         'NodeId', 'DeviceType']], how='left',
+#         on='NodeId')
+#     return df_device_search
+
+
+def search_correct(df, df_standard, df_trgt_alarm):
+    log_flag = 1
+    log_flag_list = [
+        10000,
+        20000,
+        30000,
+        40000,
+        50000,
+        60000,
+        70000,
+        80000,
+        90000,
+        100000]
+    print("开始进行告警标题规范性勘误……")
+    df2 = df_trgt_alarm.drop_duplicates(['BID'])
+    log1 = "去重后告警标题数共%d条\n" % len(df2)
+    print(log1)
+    df_search = pd.merge(df,
+                         df_standard.loc[:,
+                                         ['第二、三位（设备类型编码）',
+                                          '告警标准名']],
+                         how='left',
+                         left_on='TitleFilted',
+                         right_on='告警标准名')
+    df_correction_on_device = pd.DataFrame(
+        data=None,
+        columns=(
+            'staionNodename',
+            'DeviceNodename',
+            'staionNodeId',
+            'DeviceNodeId',
+            'BID',
+            'title',
+            'DeviceType',
+            '第二、三位（设备类型编码）',
+            '告警标准名',
+        ))
+    # for i in df_search.itertuples():
+    #     if getattr(i,'DeviceType') != getattr(i,'_10'):
+    #         dic_temp = {'NodeId':getattr(i,'NodeId'),'BID':getattr(i,'BID'),'title':getattr(i,'AlarmTitleDes'),'DeviceType':getattr(i,'DeviceType'),'第二、三位（设备类型编码）':getattr(i,'_10'),'告警标准名':getattr(i,'告警标准名')}
+    #         df_correction_device = df_correction_device.append(dic_temp,ignore_index=True)
+    # df_correction_titles = df_search[df_search['告警标准名'].isnull().values]
+    # return df_correction_device,df_correction_titles,df_search
+    BID = df['BID']
+    # df_find_errors = pd.DataFrame(data=None, columns=('NodeId', 'BID', 'title', 'DeviceType', '第二、三位（设备类型编码）', '告警标准名'))
+    for j in BID:
+        tmp = df_search[df_search['BID'].values == j]
+        find = False
+        for k in tmp.itertuples():
+            if getattr(k, 'DeviceType') == getattr(k, '_15'):
+                find = True
+                break
+        if not find:
+            dic_temp = {
+                'DeviceNodeId': getattr(k, 'NodeId_x'),
+                'DeviceNodename': getattr(k, 'NodeName_x'),
+                'BID': getattr(k, 'BID'),
+                'title': getattr(k, 'AlarmTitleDes'),
+                'DeviceType': getattr(k, 'DeviceType'),
+                '第二、三位（设备类型编码）': getattr(k, '_15'),
+                '告警标准名': getattr(k, '告警标准名'),
+                'staionNodeId': getattr(k, 'NodeId_y'),
+                'staionNodename': getattr(k, 'NodeName_y')
+            }
+            df_correction_on_device = df_correction_on_device.append(
+                dic_temp, ignore_index=True)
+        log_flag = log_flag + 1
+        if log_flag in log_flag_list:
+            print("【已勘误告警标题数】：", log_flag)
+    df_correction_titles = df_correction_on_device[df_correction_on_device['告警标准名'].isnull().values]
+    df_device_error = df_correction_on_device[df_correction_on_device['告警标准名'].isnull().values == False]
+    print("告警标题规范性勘误完成！数据保存到：告警标题规范性勘误.xlsx")
+    return df_device_error, df_correction_titles
