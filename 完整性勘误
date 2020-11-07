@@ -80,21 +80,6 @@ def comple_corr(path_dict, path_target):
         left_on='NodeId_19',
         right_on='Sta_ID')
 
-    tmp_df = aic_df2.drop_duplicates(
-        subset=[
-            'Station',
-            'Device',
-            'NodeName'],
-        keep='first')
-    aic_df2 = aic_df2.append(tmp_df)
-    tmp_df = tmp_df.loc[:, ['NodeName_改',
-                            'Station', 'Device', 'NodeId', 'NodeName']]
-    aic_df2 = aic_df2.drop_duplicates(keep=False)
-    aic_df2['是否合格'] = '不合格'
-    aic_df2 = aic_df2.loc[:, ['NodeName_改', 'Station',
-                              'Device', 'NodeId', 'NodeName', '是否合格']]
-    aic_df2 = aic_df2.append(tmp_df)
-
     ala_df['NodeId_11'] = ala_df['BID'].apply(bidtransform.BIDtoNodeID_11)
     ala_df['NodeId_19'] = ala_df['BID'].apply(bidtransform.BIDtoNodeID_19)
     ala_df['AlarmTitleDes_改'] = ala_df['AlarmTitleDes'].apply(change_dig)
@@ -110,29 +95,14 @@ def comple_corr(path_dict, path_target):
         left_on='NodeId_19',
         right_on='Sta_ID')
 
-    tmp_df2 = ala_df2.drop_duplicates(
-        subset=[
-            'Station',
-            'Device',
-            'AlarmTitleDes'],
-        keep='first')
-    ala_df2 = ala_df2.append(tmp_df2)
-    tmp_df2 = tmp_df2.loc[:, ['AlarmTitleDes_改',
-                            'Station', 'Device', 'BID', 'AlarmTitleDes']]
-    ala_df2 = ala_df2.drop_duplicates(keep=False)
-    ala_df2['是否合格'] = '不合格'
-    ala_df2 = ala_df2.loc[:, ['AlarmTitleDes_改', 'Station',
-                              'Device', 'BID', 'AlarmTitleDes', '是否合格']]
-    ala_df2 = ala_df2.append(tmp_df2)
-
     aic_df2 = pd.merge(aic_df2.loc[:, [
-        'NodeName_改', 'Station', 'Device', 'NodeId', 'NodeName', '是否合格']], sig_df2.loc[:, [
+        'NodeName_改', 'Station', 'Device', 'NodeId', 'NodeName']], sig_df2.loc[:, [
             '信号标准名', '是否关键信号', '信号标准名_改']],
         how='right',
         left_on='NodeName_改',
         right_on='信号标准名_改')
     aic_df2 = aic_df2.loc[:, [
-        'Station', 'Device', 'NodeId', 'NodeName', '是否合格', '信号标准名', '是否关键信号']]
+        'Station', 'Device', 'NodeId', 'NodeName', '信号标准名', '是否关键信号']]
     aic_df2.to_excel('信号量完整性勘误.xlsx', index=None)
 
     ala_df2 = pd.merge(ala_df2.loc[:,
@@ -140,8 +110,7 @@ def comple_corr(path_dict, path_target):
                                     'Station',
                                     'Device',
                                     'BID',
-                                    'AlarmTitleDes',
-                                    '是否合格']],
+                                    'AlarmTitleDes']],
                        alastan_df2.loc[:,
                                        ['告警标准名',
                                         '是否关键信号',
@@ -150,5 +119,5 @@ def comple_corr(path_dict, path_target):
                        left_on='AlarmTitleDes_改',
                        right_on='告警标准名_改')
     ala_df2 = ala_df2.loc[:, [
-        'Station', 'Device', 'BID', 'AlarmTitleDes', '是否合格', '告警标准名', '是否关键信号']]
+        'Station', 'Device', 'BID', 'AlarmTitleDes', '告警标准名', '是否关键信号']]
     ala_df2.to_excel('告警标题完整性勘误.xlsx', index=None)
