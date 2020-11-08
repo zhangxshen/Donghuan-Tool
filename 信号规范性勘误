@@ -135,3 +135,8 @@ def sigstand_corr(path_target,path_dict):
     sig_stand_df.to_excel('信号量规范性勘误.xlsx', index=None)
     print("\n")
     print("信号量规范性勘误完成！数据保存到：信号量规范性勘误.xlsx")
+    
+    if '否' in sig_stand_df['是否符合标准名'].values:
+        print("检测到有不符合标准名的信号量名称，请打开 信号量规范性勘误.xlsx 进行具体核查")
+    else:
+        print("恭喜！所有信号量名称均符合标准名")
