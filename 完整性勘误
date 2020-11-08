@@ -35,7 +35,6 @@ def change_dig(nodename):
 
 
 def comple_corr(path_dict, path_target):
-    print("下面开始进行信号量和告警标题完整性勘误……\n")
     aic_df = pd.read_excel(path_target, sheet_name='M_AIC')
     ala_df = pd.read_excel(path_target, sheet_name='AlarmTitle')
     sta_df = pd.read_excel(path_target, sheet_name='M_Station')
@@ -121,3 +120,13 @@ def comple_corr(path_dict, path_target):
     ala_df2 = ala_df2.loc[:, [
         'Station', 'Device', 'BID', 'AlarmTitleDes', '告警标准名', '是否关键信号']]
     ala_df2.to_excel('告警标题完整性勘误.xlsx', index=None)
+
+    aic_count = sig_df['完整性勘误'].value_counts()['完整性']
+    ala_count = alastan_df['完整性勘误'].value_counts()['完整性']
+    aic_empty = aic_df2.isnull().sum(axis=0)['Station']
+    ala_empty = ala_df2.isnull().sum(axis=0)['Station']
+    print("完整性勘误结果如下：")
+    print("信号量完整性标题共"+str(aic_count)+"条，其中有"+str(aic_empty)+"条完整性标题缺失")
+    print("告警标题完整性标题共"+str(ala_count)+"条，其中有"+str(ala_empty)+"条完整性标题缺失")
+    print("详细勘误结果请打开：信号量完整性勘误.xlsx 以及 告警标题完整性勘误.xlsx")
+    print("缺失的完整性标题位于表的最下方")
