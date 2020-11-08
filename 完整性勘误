@@ -120,6 +120,7 @@ def comple_corr(path_dict, path_target):
     ala_df2 = ala_df2.loc[:, [
         'Station', 'Device', 'BID', 'AlarmTitleDes', '告警标准名', '是否关键信号']]
     ala_df2.to_excel('告警标题完整性勘误.xlsx', index=None)
+    print("信号量和告警标题完整性勘误完成！数据保存到 信号量完整性勘误.xlsx 以及 告警标题完整性勘误.xlsx")
 
     aic_count = sig_df['完整性勘误'].value_counts()['完整性']
     ala_count = alastan_df['完整性勘误'].value_counts()['完整性']
